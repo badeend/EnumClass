@@ -1,0 +1,16 @@
+body {
+	--bs-link-color-rgb: 135, 117, 255 !important;
+	--bs-link-hover-color-rgb: 135, 117, 255 !important;
+}
+
+.affix .link-body-emphasis {
+	font-weight: 600;
+}
+
+.hljs-deletion {
+	color: #a31515;
+}
+
+.hljs-addition {
+	color: #2b91af;
+}

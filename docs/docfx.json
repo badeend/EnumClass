@@ -1,0 +1,59 @@
+{
+  "metadata": [
+    {
+      "properties": {
+        "TargetFramework": "netstandard2.0"
+      },
+      "src": [
+        {
+          "src": "..",
+          "files": [
+            "Badeend.EnumClass.Reflection/Badeend.EnumClass.Reflection.csproj",
+            "Badeend.EnumClass.SystemTextJson/Badeend.EnumClass.SystemTextJson.csproj"
+          ]
+        }
+      ],
+      "dest": "api",
+      "filter": "filterConfig.yml"
+    }
+  ],
+  "build": {
+    "content": [
+      {
+        "files": [
+          "**/*.{md,yml}"
+        ],
+        "exclude": [
+          "rendered/**",
+          "filterConfig.yml"
+        ]
+      }
+    ],
+    "resource": [
+      {
+        "files": [
+          "images/**"
+        ]
+      }
+    ],
+    "output": "rendered",
+    "template": [
+      "default",
+      "modern",
+      "template"
+    ],
+    "globalMetadata": {
+      "_appName": "EnumClass",
+      "_appTitle": "EnumClass",
+      "_appLogoPath": "images/logo-header.png",
+      "_appFaviconPath": "images/favicon.ico",
+      "_enableSearch": true,
+      "_disableToc": false,
+      "_gitContribute": {
+        "repo": "https://github.com/badeend/EnumClass",
+        "branch": "main"
+      },
+      "pdf": false
+    }
+  }
+}
