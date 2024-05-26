@@ -1,0 +1,4 @@
+[*]
+
+dotnet_diagnostic.CS1591.severity = none # Missing XML comment for publicly visible type or member
+dotnet_diagnostic.SA1600.severity = none # Elements should be documented
