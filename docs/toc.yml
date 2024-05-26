@@ -1,0 +1,9 @@
+- name: Introduction
+  href: index.md
+- name: API Reference
+  href: api/toc.yml
+  expanded: true
+- name: Diagnostics
+  href: diagnostics/toc.yml
+- name: Source code
+  href: https://github.com/badeend/EnumClass
