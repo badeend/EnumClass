@@ -26,10 +26,10 @@ public sealed class JsonAttributeAnalyzer : DiagnosticAnalyzer
 		isEnabledByDefault: true,
 		helpLinkUri: "https://badeend.github.io/EnumClass/diagnostics/EC3002.html");
 
-	public override sealed ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [
+	public override sealed ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create([
 		JsonDiscriminatorOnNonEnumCaseDiagnostic,
 		JsonDiscriminatorOnNestedEnumClassDiagnostic,
-	];
+	]);
 
 	public override sealed void Initialize(AnalysisContext context)
 	{
@@ -58,11 +58,11 @@ public sealed class JsonAttributeAnalyzer : DiagnosticAnalyzer
 		var baseType = type.BaseType;
 		if (baseType is null || !baseType.HasEnumClassAttribute())
 		{
-			ReportDiagnostic(context, [location], JsonDiscriminatorOnNonEnumCaseDiagnostic);
+			ReportDiagnostic(context, location, JsonDiscriminatorOnNonEnumCaseDiagnostic);
 		}
 		else if (type.HasEnumClassAttribute())
 		{
-			ReportDiagnostic(context, [location], JsonDiscriminatorOnNestedEnumClassDiagnostic);
+			ReportDiagnostic(context, location, JsonDiscriminatorOnNestedEnumClassDiagnostic);
 		}
 	}
 
@@ -90,11 +90,8 @@ public sealed class JsonAttributeAnalyzer : DiagnosticAnalyzer
 		return attributeClass.Name == "JsonDiscriminatorAttribute" && attributeClass.ContainingNamespace.ToString() == "Badeend.EnumClass.SystemTextJson";
 	}
 
-	private static void ReportDiagnostic(SymbolAnalysisContext context, ImmutableArray<Location> locations, DiagnosticDescriptor diagnostic, params string?[]? messageArgs)
+	private static void ReportDiagnostic(SymbolAnalysisContext context, Location location, DiagnosticDescriptor diagnostic, params string?[]? messageArgs)
 	{
-		foreach (var location in locations)
-		{
-			context.ReportDiagnostic(Diagnostic.Create(diagnostic, location, messageArgs));
-		}
+		context.ReportDiagnostic(Diagnostic.Create(diagnostic, location, messageArgs));
 	}
 }

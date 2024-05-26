@@ -29,11 +29,11 @@ public abstract class ExhaustivenessAnalyzer : DiagnosticAnalyzer
 		isEnabledByDefault: true,
 		helpLinkUri: "https://badeend.github.io/EnumClass/diagnostics/EC2004.html");
 
-	public override sealed ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [
+	public override sealed ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create([
 		this.NotExhaustiveDiagnostic,
 		UnreachablePatternDiagnostic,
 		NoCaseImplementsInterfaceDiagnostic,
-	];
+	]);
 
 	protected void AnalyzeSwitch(SyntaxNodeAnalysisContext context, ExpressionSyntax governingExpression, SyntaxToken switchKeyword, IEnumerable<Pattern> patterns)
 	{
@@ -261,20 +261,17 @@ public abstract class ExhaustivenessAnalyzer : DiagnosticAnalyzer
 
 	private static void ReportDiagnostic(SyntaxNodeAnalysisContext context, SyntaxNode node, DiagnosticDescriptor diagnostic, params string?[]? messageArgs)
 	{
-		ReportDiagnostic(context, [node.GetLocation()], diagnostic, messageArgs);
+		ReportDiagnostic(context, node.GetLocation(), diagnostic, messageArgs);
 	}
 
 	private static void ReportDiagnostic(SyntaxNodeAnalysisContext context, SyntaxToken token, DiagnosticDescriptor diagnostic, params string?[]? messageArgs)
 	{
-		ReportDiagnostic(context, [token.GetLocation()], diagnostic, messageArgs);
+		ReportDiagnostic(context, token.GetLocation(), diagnostic, messageArgs);
 	}
 
-	private static void ReportDiagnostic(SyntaxNodeAnalysisContext context, ImmutableArray<Location> locations, DiagnosticDescriptor diagnostic, params string?[]? messageArgs)
+	private static void ReportDiagnostic(SyntaxNodeAnalysisContext context, Location location, DiagnosticDescriptor diagnostic, params string?[]? messageArgs)
 	{
-		foreach (var location in locations)
-		{
-			context.ReportDiagnostic(Diagnostic.Create(diagnostic, location, messageArgs));
-		}
+		context.ReportDiagnostic(Diagnostic.Create(diagnostic, location, messageArgs));
 	}
 
 	protected abstract record Pattern(SyntaxNode Node)

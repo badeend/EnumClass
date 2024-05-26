@@ -116,7 +116,7 @@ public sealed class DeclarationAnalyzer : DiagnosticAnalyzer
 		isEnabledByDefault: true,
 		helpLinkUri: "https://badeend.github.io/EnumClass/diagnostics/EC1031.html");
 
-	public override sealed ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [
+	public override sealed ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create([
 		EnumClassMustBeAbstractDiagnostic,
 		EnumCaseOutsideEnumClassDiagnostic,
 		EnumCaseVisibilityDiagnostic,
@@ -128,7 +128,7 @@ public sealed class DeclarationAnalyzer : DiagnosticAnalyzer
 		BaseTypeSpecializationDiagnostic,
 		UnrelatedNestedTypeDiagnostic,
 		NoCasesDiagnostic,
-	];
+	]);
 
 	public override sealed void Initialize(AnalysisContext context)
 	{

@@ -16,9 +16,9 @@ public sealed class NonExhaustiveSwitchStatementSuppressor : DiagnosticSuppresso
 		suppressedDiagnosticId: "IDE0010",
 		justification: "All enum cases were matched");
 
-	public override ImmutableArray<SuppressionDescriptor> SupportedSuppressions { get; } = [
+	public override ImmutableArray<SuppressionDescriptor> SupportedSuppressions { get; } = ImmutableArray.Create([
 		IDE0010Suppression,
-	];
+	]);
 
 	public override void ReportSuppressions(SuppressionAnalysisContext context)
 	{
