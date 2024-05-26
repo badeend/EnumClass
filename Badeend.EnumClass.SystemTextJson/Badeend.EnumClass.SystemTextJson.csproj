@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <PackageId>Badeend.EnumClass.SystemTextJson</PackageId>
+    <Description>TODO</Description>
+    <TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="8.0.0" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
+
+    <ProjectReference Include="..\Badeend.EnumClass.Reflection\Badeend.EnumClass.Reflection.csproj" />
+  </ItemGroup>
+</Project>
