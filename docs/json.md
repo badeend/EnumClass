@@ -2,7 +2,7 @@
 
 ## System.Text.Json
 
-This package builds on top of `System.Text.Json`s [built-in support for polymorphism](https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json/polymorphism). Enabling this package automatically marks every enum class as [`[JsonPolymorphic]`](https://learn.microsoft.com/en-us/dotnet/api/system.text.json.serialization.jsonpolymorphicattribute) and adds every enum case as a [`[JsonDerivedType]`](https://learn.microsoft.com/en-us/dotnet/api/system.text.json.serialization.jsonderivedtypeattribute).
+`Badeend.EnumClass.SystemTextJson` is an auxiliary package that builds on `System.Text.Json`s [built-in support for polymorphism](https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json/polymorphism). Enabling this package automatically marks every enum class as [`[JsonPolymorphic]`](https://learn.microsoft.com/en-us/dotnet/api/system.text.json.serialization.jsonpolymorphicattribute) and adds every enum case as a [`[JsonDerivedType]`](https://learn.microsoft.com/en-us/dotnet/api/system.text.json.serialization.jsonderivedtypeattribute).
 
 #### Installation
 
@@ -11,6 +11,8 @@ This package builds on top of `System.Text.Json`s [built-in support for polymorp
 ```sh
 dotnet add package Badeend.EnumClass.SystemTextJson
 ```
+
+[**API documentation →**](xref:Badeend.EnumClass.SystemTextJson.Configuration)
 
 #### Configure standalone `JsonSerializerOptions`
 

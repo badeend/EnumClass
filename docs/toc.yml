@@ -2,6 +2,8 @@
   href: index.md
 - name: JSON
   href: json.md
+- name: Reflection
+  href: reflection.md
 - name: API Reference
   href: api/toc.yml
   expanded: true
