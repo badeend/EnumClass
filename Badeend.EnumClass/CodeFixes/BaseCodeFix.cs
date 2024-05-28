@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Editing;
 
-namespace Badeend.EnumClass.Analyzers;
+namespace Badeend.EnumClass.CodeFixes;
 
 public abstract class BaseCodeFix : CodeFixProvider
 {

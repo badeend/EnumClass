@@ -1,6 +1,6 @@
 using Microsoft.CodeAnalysis;
 
-namespace Badeend.EnumClass.Analyzers;
+namespace Badeend.EnumClass.SourceGenerators;
 
 [Generator]
 public class AttributeSourceGenerator : ISourceGenerator

@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using Badeend.EnumClass.Internals;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;

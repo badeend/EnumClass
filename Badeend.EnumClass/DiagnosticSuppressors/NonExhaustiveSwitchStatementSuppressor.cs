@@ -1,32 +1,24 @@
 using System.Collections.Immutable;
+using Badeend.EnumClass.Internals;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace Badeend.EnumClass.Analyzers;
+namespace Badeend.EnumClass.DiagnosticSuppressors;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class NonExhaustiveSwitchExpressionSuppressor : DiagnosticSuppressor
+public sealed class NonExhaustiveSwitchStatementSuppressor : DiagnosticSuppressor
 {
 	/// <summary>
-	/// CS8509: "The switch expression does not handle all possible values of its input type (it is not exhaustive). For example, the pattern '...' is not covered".
+	/// IDE0010: "Add missing cases to switch statement".
 	/// </summary>
-	private static readonly SuppressionDescriptor CS8509Suppression = new(
-		id: "CS8509_EnumClass",
-		suppressedDiagnosticId: "CS8509",
-		justification: "All enum cases were matched");
-
-	/// <summary>
-	/// IDE0072: "Add missing cases to switch expression".
-	/// </summary>
-	private static readonly SuppressionDescriptor IDE0072Suppression = new(
-		id: "IDE0072_EnumClass",
-		suppressedDiagnosticId: "IDE0072",
+	private static readonly SuppressionDescriptor IDE0010Suppression = new(
+		id: "IDE0010_EnumClass",
+		suppressedDiagnosticId: "IDE0010",
 		justification: "All enum cases were matched");
 
 	public override ImmutableArray<SuppressionDescriptor> SupportedSuppressions { get; } = ImmutableArray.Create([
-		CS8509Suppression,
-		IDE0072Suppression,
+		IDE0010Suppression,
 	]);
 
 	public override void ReportSuppressions(SuppressionAnalysisContext context)
@@ -35,8 +27,7 @@ public sealed class NonExhaustiveSwitchExpressionSuppressor : DiagnosticSuppress
 		{
 			var suppression = diagnostic.Id switch
 			{
-				"CS8509" => CS8509Suppression,
-				"IDE0072" => IDE0072Suppression,
+				"IDE0010" => IDE0010Suppression,
 				_ => null,
 			};
 
@@ -55,15 +46,15 @@ public sealed class NonExhaustiveSwitchExpressionSuppressor : DiagnosticSuppress
 			return;
 		}
 
-		var switchExpression = node.AncestorsAndSelf().OfType<SwitchExpressionSyntax>().FirstOrDefault();
-		if (switchExpression is null)
+		var switchStatement = node.AncestorsAndSelf().OfType<SwitchStatementSyntax>().FirstOrDefault();
+		if (switchStatement is null)
 		{
 			return;
 		}
 
 		var semanticModel = context.GetSemanticModel(node.SyntaxTree);
 
-		var enumClassType = semanticModel.GetEnumClassType(switchExpression.GoverningExpression);
+		var enumClassType = semanticModel.GetEnumClassType(switchStatement.Expression);
 		if (enumClassType is null)
 		{
 			return;

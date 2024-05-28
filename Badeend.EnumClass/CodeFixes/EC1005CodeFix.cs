@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
 
-namespace Badeend.EnumClass.Analyzers;
+namespace Badeend.EnumClass.CodeFixes;
 
 [ExportCodeFixProvider(LanguageNames.CSharp)]
 [Shared]

@@ -1,4 +1,4 @@
-namespace Badeend.EnumClass.Analyzers;
+namespace Badeend.EnumClass.Internals;
 
 internal static class DiagnosticCategory
 {

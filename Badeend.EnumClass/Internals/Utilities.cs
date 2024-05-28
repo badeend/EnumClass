@@ -1,7 +1,7 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Badeend.EnumClass.Analyzers;
+namespace Badeend.EnumClass.Internals;
 
 internal static class Utilities
 {
