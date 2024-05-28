@@ -43,7 +43,6 @@ public sealed class IsAnalyzer : DiagnosticAnalyzer
 	private static CaseAnalyzer CreateCaseAnalyzer(SyntaxNodeAnalysisContext context)
 	{
 		return new CaseAnalyzer(
-			compilation: context.Compilation,
 			semanticModel: context.SemanticModel,
 			reportUnreachablePattern: (location, message) => ReportDiagnostic(context, location, Diagnostics.EC2003_UnreachablePattern, message),
 			reportNoCaseImplementsInterface: (location) => ReportDiagnostic(context, location, Diagnostics.EC2004_NoCaseImplementsInterface));

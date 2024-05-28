@@ -6,7 +6,6 @@ using static Badeend.EnumClass.Internals.CaseAnalysis;
 namespace Badeend.EnumClass.Internals;
 
 internal sealed class CaseAnalyzer(
-	Compilation compilation,
 	SemanticModel semanticModel,
 	Action<Location> reportNoCaseImplementsInterface,
 	Action<Location, string> reportUnreachablePattern)
@@ -158,7 +157,7 @@ internal sealed class CaseAnalyzer(
 
 	private bool IsAssignableTo(ITypeSymbol from, ITypeSymbol to)
 	{
-		var conversion = compilation.ClassifyConversion(from, to);
+		var conversion = semanticModel.Compilation.ClassifyConversion(from, to);
 
 		return conversion.IsIdentity || (conversion.IsReference && conversion.IsImplicit);
 	}
