@@ -68,13 +68,13 @@ public abstract class ExhaustivenessAnalyzer : DiagnosticAnalyzer
 			{
 				isMissingNullCheck = false;
 			}
-			else if (pattern is Pattern.Match matchPattern && context.SemanticModel.GetSymbolInfo(matchPattern.Comparand).Symbol is INamedTypeSymbol symbol)
+			else if (pattern is Pattern.TypeCheck typeCheck)
 			{
 				var matchedAnyNewCases = false;
 				var matchesAnyKnownCase = false;
 				foreach (var enumCase in cases)
 				{
-					var caseMatch = ClassifyCaseMatch(context, matchPattern, symbol, enumCase.Type);
+					var caseMatch = ClassifyCaseMatch(context, typeCheck, enumCase.Type);
 					if (caseMatch == CaseMatch.None)
 					{
 						continue;
@@ -95,16 +95,16 @@ public abstract class ExhaustivenessAnalyzer : DiagnosticAnalyzer
 				{
 					if (!matchedAnyNewCases)
 					{
-						ReportDiagnostic(context, matchPattern.Comparand, UnreachablePatternDiagnostic, "This pattern has already been handled by previous matches.");
+						ReportDiagnostic(context, typeCheck.Node, UnreachablePatternDiagnostic, "This pattern has already been handled by previous matches.");
 					}
 				}
 				else
 				{
 					MaybeReportUnreachablePattern(context, cases, pattern);
 
-					if (symbol.TypeKind == TypeKind.Interface)
+					if (typeCheck.Type.TypeKind == TypeKind.Interface)
 					{
-						ReportDiagnostic(context, matchPattern.Comparand, NoCaseImplementsInterfaceDiagnostic);
+						ReportDiagnostic(context, typeCheck.Node, NoCaseImplementsInterfaceDiagnostic);
 					}
 
 					// Let CS8510 ("The pattern is unreachable. ...") handle the rest.
@@ -147,14 +147,14 @@ public abstract class ExhaustivenessAnalyzer : DiagnosticAnalyzer
 		Full,
 	}
 
-	private static CaseMatch ClassifyCaseMatch(SyntaxNodeAnalysisContext context, Pattern.Match match, INamedTypeSymbol symbol, INamedTypeSymbol caseType)
+	private static CaseMatch ClassifyCaseMatch(SyntaxNodeAnalysisContext context, Pattern.TypeCheck typeCheck, INamedTypeSymbol caseType)
 	{
-		if (IsAssignableTo(context, caseType, symbol))
+		if (IsAssignableTo(context, caseType, typeCheck.Type))
 		{
-			return match.IsPartial == false ? CaseMatch.Full : CaseMatch.Partial;
+			return typeCheck.IsPartial == false ? CaseMatch.Full : CaseMatch.Partial;
 		}
 
-		if (IsAssignableTo(context, symbol, caseType))
+		if (IsAssignableTo(context, typeCheck.Type, caseType))
 		{
 			return CaseMatch.Partial;
 		}
@@ -274,6 +274,7 @@ public abstract class ExhaustivenessAnalyzer : DiagnosticAnalyzer
 		context.ReportDiagnostic(Diagnostic.Create(diagnostic, location, messageArgs));
 	}
 
+	// If only we could apply [EnumClass] here :)
 	protected abstract record Pattern(SyntaxNode Node)
 	{
 		/// <summary>
@@ -289,10 +290,9 @@ public abstract class ExhaustivenessAnalyzer : DiagnosticAnalyzer
 		internal record Null(SyntaxNode Node) : Pattern(Node);
 
 		/// <summary>
-		/// Pattern matches the Comparand.
-		/// The semantic model is required to decide whether this is a type or a value.
+		/// Pattern matches a type.
 		/// </summary>
-		internal record Match(SyntaxNode Node, ExpressionSyntax Comparand, bool IsPartial) : Pattern(Node);
+		internal record TypeCheck(SyntaxNode Node, INamedTypeSymbol Type, bool IsPartial) : Pattern(Node);
 
 		/// <summary>
 		/// Any other kind of pattern, including:
@@ -300,21 +300,24 @@ public abstract class ExhaustivenessAnalyzer : DiagnosticAnalyzer
 		/// - patterns that have additional conditions.
 		/// </summary>
 		internal record Other(SyntaxNode Node) : Pattern(Node);
+	}
 
-		internal static IEnumerable<Pattern> Parse(SwitchExpressionSyntax switchExpression)
+	protected class PatternParser(SemanticModel semanticModel)
+	{
+		internal IEnumerable<Pattern> Parse(SwitchExpressionSyntax switchExpression)
 		{
-			return switchExpression.Arms.SelectMany(arm => ApplyWhenClause(Parse(arm.Pattern), arm.WhenClause));
+			return switchExpression.Arms.SelectMany(arm => ApplyWhenClause(this.Parse(arm.Pattern), arm.WhenClause));
 		}
 
-		internal static IEnumerable<Pattern> Parse(SwitchStatementSyntax switchStatement)
+		internal IEnumerable<Pattern> Parse(SwitchStatementSyntax switchStatement)
 		{
 			return switchStatement.Sections.SelectMany(section => section.Labels).SelectMany(label => label switch
 			{
-				DefaultSwitchLabelSyntax defaultSwitchLabel => [new Wildcard(defaultSwitchLabel)],
-				CaseSwitchLabelSyntax caseSwitchLabel => ParseExpression(caseSwitchLabel.Value, partial: false),
-				CasePatternSwitchLabelSyntax casePatternSwitchLabel => ApplyWhenClause(Parse(casePatternSwitchLabel.Pattern), casePatternSwitchLabel.WhenClause),
+				DefaultSwitchLabelSyntax defaultSwitchLabel => [new Pattern.Wildcard(defaultSwitchLabel)],
+				CaseSwitchLabelSyntax caseSwitchLabel => this.ParseExpression(caseSwitchLabel.Value, partial: false),
+				CasePatternSwitchLabelSyntax casePatternSwitchLabel => ApplyWhenClause(this.Parse(casePatternSwitchLabel.Pattern), casePatternSwitchLabel.WhenClause),
 
-				_ => [new Other(label)],
+				_ => [new Pattern.Other(label)],
 			});
 		}
 
@@ -327,103 +330,108 @@ public abstract class ExhaustivenessAnalyzer : DiagnosticAnalyzer
 
 			return patterns.Select(pattern => pattern switch
 			{
-				Match match => match with { IsPartial = true },
-				_ => (Pattern)new Other(pattern.Node),
+				Pattern.TypeCheck typeCheck => typeCheck with { IsPartial = true },
+				_ => (Pattern)new Pattern.Other(pattern.Node),
 			});
 		}
 
-		internal static IEnumerable<Pattern> Parse(PatternSyntax pattern) => pattern switch
+		internal IEnumerable<Pattern> Parse(PatternSyntax pattern) => pattern switch
 		{
-			DiscardPatternSyntax => [new Wildcard(pattern)],
-			ParenthesizedPatternSyntax parenthesizedPattern => Parse(parenthesizedPattern.Pattern),
-			TypePatternSyntax typePattern => ParseExpression(typePattern.Type, partial: false),
-			VarPatternSyntax => [new Wildcard(pattern)],
-			DeclarationPatternSyntax declarationPattern => ParseExpression(declarationPattern.Type, partial: false),
-			BinaryPatternSyntax binaryPattern => ParseBinaryPattern(binaryPattern),
-			ConstantPatternSyntax constantPattern => ParseExpression(constantPattern.Expression, partial: false),
-			RecursivePatternSyntax recursivePattern => ParseRecursivePattern(recursivePattern),
+			DiscardPatternSyntax => [new Pattern.Wildcard(pattern)],
+			ParenthesizedPatternSyntax parenthesizedPattern => this.Parse(parenthesizedPattern.Pattern),
+			TypePatternSyntax typePattern => this.ParseExpression(typePattern.Type, partial: false),
+			VarPatternSyntax => [new Pattern.Wildcard(pattern)],
+			DeclarationPatternSyntax declarationPattern => this.ParseExpression(declarationPattern.Type, partial: false),
+			BinaryPatternSyntax binaryPattern => this.ParseBinaryPattern(binaryPattern),
+			ConstantPatternSyntax constantPattern => this.ParseExpression(constantPattern.Expression, partial: false),
+			RecursivePatternSyntax recursivePattern => this.ParseRecursivePattern(recursivePattern),
 
 			ListPatternSyntax or
 			RelationalPatternSyntax or
 			SlicePatternSyntax or
 			UnaryPatternSyntax or
-			_ => [new Other(pattern)],
+			_ => [new Pattern.Other(pattern)],
 		};
 
-		private static IEnumerable<Pattern> ParseExpression(ExpressionSyntax expression, bool partial)
+		private IEnumerable<Pattern> ParseExpression(ExpressionSyntax expression, bool partial)
 		{
 			if (IsNullLiteral(expression))
 			{
-				return [new Null(expression)];
+				return [new Pattern.Null(expression)];
 			}
 
-			return [new Match(expression, expression, partial)];
+			if (semanticModel.GetSymbolInfo(expression).Symbol is INamedTypeSymbol type)
+			{
+				return [new Pattern.TypeCheck(expression, type, partial)];
+			}
+
+			return [new Pattern.Other(expression)];
 		}
 
-		private static IEnumerable<Pattern> ParseBinaryPattern(BinaryPatternSyntax binaryPattern)
+		private IEnumerable<Pattern> ParseBinaryPattern(BinaryPatternSyntax binaryPattern)
 		{
 			if (binaryPattern.OperatorToken.IsKind(SyntaxKind.OrKeyword))
 			{
-				return ParseOrPattern(binaryPattern);
+				return this.ParseOrPattern(binaryPattern);
 			}
 			else if (binaryPattern.OperatorToken.IsKind(SyntaxKind.AndKeyword))
 			{
-				return ParseAndPattern(binaryPattern);
+				return this.ParseAndPattern(binaryPattern);
 			}
 			else
 			{
 				// Unknown keyword. Assume the worst case:
-				return [new Other(binaryPattern)];
+				return [new Pattern.Other(binaryPattern)];
 			}
 		}
 
-		private static IEnumerable<Pattern> ParseOrPattern(BinaryPatternSyntax orPattern)
+		private IEnumerable<Pattern> ParseOrPattern(BinaryPatternSyntax orPattern)
 		{
-			return Parse(orPattern.Left).Concat(Parse(orPattern.Right));
+			return this.Parse(orPattern.Left).Concat(this.Parse(orPattern.Right));
 		}
 
-		private static IEnumerable<Pattern> ParseAndPattern(BinaryPatternSyntax andPattern)
+		private IEnumerable<Pattern> ParseAndPattern(BinaryPatternSyntax andPattern)
 		{
-			if (IsWildcard(andPattern.Left) && IsWildcard(andPattern.Right))
+			if (this.IsWildcard(andPattern.Left) && this.IsWildcard(andPattern.Right))
 			{
-				return [new Wildcard(andPattern)];
+				return [new Pattern.Wildcard(andPattern)];
 			}
 
-			return [new Other(andPattern)];
+			return [new Pattern.Other(andPattern)];
 		}
 
-		private static IEnumerable<Pattern> ParseRecursivePattern(RecursivePatternSyntax recursivePattern)
+		private IEnumerable<Pattern> ParseRecursivePattern(RecursivePatternSyntax recursivePattern)
 		{
 			if (recursivePattern.Type is not null)
 			{
-				var positionalPatternsAreWildcard = recursivePattern.PositionalPatternClause?.Subpatterns.All(p => IsWildcard(p.Pattern)) ?? true;
-				var propertyPatternsAreWildcard = recursivePattern.PropertyPatternClause?.Subpatterns.All(p => IsWildcard(p.Pattern)) ?? true;
+				var positionalPatternsAreWildcard = recursivePattern.PositionalPatternClause?.Subpatterns.All(p => this.IsWildcard(p.Pattern)) ?? true;
+				var propertyPatternsAreWildcard = recursivePattern.PropertyPatternClause?.Subpatterns.All(p => this.IsWildcard(p.Pattern)) ?? true;
 
 				if (positionalPatternsAreWildcard && propertyPatternsAreWildcard)
 				{
-					return ParseExpression(recursivePattern.Type, partial: false);
+					return this.ParseExpression(recursivePattern.Type, partial: false);
 				}
 				else
 				{
-					return ParseExpression(recursivePattern.Type, partial: true);
+					return this.ParseExpression(recursivePattern.Type, partial: true);
 				}
 			}
 			else
 			{
 				if (recursivePattern.PositionalPatternClause is null && recursivePattern.PropertyPatternClause is null)
 				{
-					return [new Wildcard(recursivePattern)];
+					return [new Pattern.Wildcard(recursivePattern)];
 				}
 				else
 				{
-					return [new Other(recursivePattern)];
+					return [new Pattern.Other(recursivePattern)];
 				}
 			}
 		}
 
-		private static bool IsWildcard(PatternSyntax pattern)
+		private bool IsWildcard(PatternSyntax pattern)
 		{
-			return Parse(pattern).All(p => p is Wildcard);
+			return this.Parse(pattern).All(p => p is Pattern.Wildcard);
 		}
 
 		private static bool IsNullLiteral(ExpressionSyntax expression)

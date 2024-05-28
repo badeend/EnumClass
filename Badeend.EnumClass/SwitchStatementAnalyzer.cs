@@ -28,7 +28,7 @@ public sealed class SwitchStatementAnalyzer : ExhaustivenessAnalyzer
 	private void AnalyzeSwitchStatement(SyntaxNodeAnalysisContext context)
 	{
 		var switchStatement = (SwitchStatementSyntax)context.Node;
-		var patterns = Pattern.Parse(switchStatement);
+		var patterns = new PatternParser(context.SemanticModel).Parse(switchStatement);
 
 		this.AnalyzeSwitch(context, switchStatement.Expression, switchStatement.SwitchKeyword, patterns);
 	}
