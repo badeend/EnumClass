@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Badeend.EnumClass</PackageId>
-    <Description>TODO</Description>
+    <Description>Enums with payloads. Or for the fancy pants: discriminated unions for C# with compile-time exhaustiveness checking, implemented using closed type hierarchies.</Description>
     <TargetFramework>netstandard2.0</TargetFramework>
 
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
