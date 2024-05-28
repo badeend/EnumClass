@@ -142,7 +142,7 @@ internal static class Diagnostics
 	internal static readonly DiagnosticDescriptor EC2001_NotExhaustive = new(
 		id: EC2001,
 		title: "Switch expression on enum class is not exhaustive",
-		messageFormat: "Switch is not exhaustive. {0}",
+		messageFormat: "Switch is not exhaustive. {0}.",
 		category: Category.Usage,
 		defaultSeverity: DiagnosticSeverity.Warning,
 		isEnabledByDefault: true,
@@ -151,7 +151,7 @@ internal static class Diagnostics
 	internal static readonly DiagnosticDescriptor EC2002_NotExhaustive = new(
 		id: EC2002,
 		title: "Switch statement on enum class is not exhaustive",
-		messageFormat: "Switch is not exhaustive. {0}",
+		messageFormat: "Switch is not exhaustive. {0}.",
 		category: Category.Usage,
 		defaultSeverity: DiagnosticSeverity.Warning,
 		isEnabledByDefault: true,
@@ -160,7 +160,7 @@ internal static class Diagnostics
 	internal static readonly DiagnosticDescriptor EC2003_UnreachablePattern = new(
 		id: EC2003,
 		title: "Unreachable pattern",
-		messageFormat: "Unreachable pattern. {0}",
+		messageFormat: "Unreachable pattern. {0}.",
 		category: Category.Usage,
 		defaultSeverity: DiagnosticSeverity.Warning,
 		isEnabledByDefault: true,

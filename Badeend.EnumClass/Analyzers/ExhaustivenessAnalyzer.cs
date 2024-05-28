@@ -77,7 +77,7 @@ public abstract class ExhaustivenessAnalyzer : DiagnosticAnalyzer
 				{
 					if (!matchedAnyNewCases)
 					{
-						ReportDiagnostic(context, typeCheck.Node, Diagnostics.EC2003_UnreachablePattern, "This pattern has already been handled by previous matches.");
+						ReportDiagnostic(context, typeCheck.Node, Diagnostics.EC2003_UnreachablePattern, "This pattern has already been handled by previous matches");
 					}
 				}
 				else
@@ -109,15 +109,15 @@ public abstract class ExhaustivenessAnalyzer : DiagnosticAnalyzer
 			var partiallyMatchedCases = cases.Where(c => c.Match == CaseMatch.Partial).Select(c => c.Type).ToArray();
 			if (partiallyMatchedCases.Length == unmatchedCases.Length)
 			{
-				ReportDiagnostic(context, switchKeyword, this.NotExhaustiveDiagnostic, $"The following cases are being matched on, but only partially: {FormatCaseListForHumans(enumClassType, partiallyMatchedCases)}.");
+				ReportDiagnostic(context, switchKeyword, this.NotExhaustiveDiagnostic, $"The following cases are being matched on, but only partially: {FormatCaseListForHumans(enumClassType, partiallyMatchedCases)}");
 			}
 			else if (partiallyMatchedCases.Length > 0)
 			{
-				ReportDiagnostic(context, switchKeyword, this.NotExhaustiveDiagnostic, $"Unhandled cases: {FormatCaseListForHumans(enumClassType, unmatchedCases)}. Some of these are already being matched on, but only partially: {FormatCaseListForHumans(enumClassType, partiallyMatchedCases)}.");
+				ReportDiagnostic(context, switchKeyword, this.NotExhaustiveDiagnostic, $"Unhandled cases: {FormatCaseListForHumans(enumClassType, unmatchedCases)}. Some of these are already being matched on, but only partially: {FormatCaseListForHumans(enumClassType, partiallyMatchedCases)}");
 			}
 			else
 			{
-				ReportDiagnostic(context, switchKeyword, this.NotExhaustiveDiagnostic, $"Unhandled cases: {FormatCaseListForHumans(enumClassType, unmatchedCases)}.");
+				ReportDiagnostic(context, switchKeyword, this.NotExhaustiveDiagnostic, $"Unhandled cases: {FormatCaseListForHumans(enumClassType, unmatchedCases)}");
 			}
 		}
 	}
@@ -161,7 +161,7 @@ public abstract class ExhaustivenessAnalyzer : DiagnosticAnalyzer
 	{
 		if (cases.All(c => c.Match == CaseMatch.Full))
 		{
-			ReportDiagnostic(context, pattern.Node, Diagnostics.EC2003_UnreachablePattern, "All enum cases have already been handled.");
+			ReportDiagnostic(context, pattern.Node, Diagnostics.EC2003_UnreachablePattern, "All enum cases have already been handled");
 		}
 	}
 
