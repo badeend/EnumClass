@@ -9,126 +9,18 @@ namespace Badeend.EnumClass.Analyzers;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public sealed class DeclarationAnalyzer : DiagnosticAnalyzer
 {
-	private static readonly DiagnosticDescriptor EnumClassMustBeAbstractDiagnostic = new(
-		id: "EC1000",
-		title: "Enum class must be abstract",
-		messageFormat: "Enum class must be abstract",
-		category: DiagnosticCategory.Declaration,
-		defaultSeverity: DiagnosticSeverity.Error,
-		isEnabledByDefault: true,
-		helpLinkUri: "https://badeend.github.io/EnumClass/diagnostics/EC1000.html",
-		customTags: [WellKnownDiagnosticTags.NotConfigurable]);
-
-	private static readonly DiagnosticDescriptor EnumCaseOutsideEnumClassDiagnostic = new(
-		id: "EC1001",
-		title: "Cannot extend enum class outside of its definition",
-		messageFormat: "Cannot extend enum class outside of its definition. Enum cases must be placed directly within their base class.",
-		category: DiagnosticCategory.Declaration,
-		defaultSeverity: DiagnosticSeverity.Error,
-		isEnabledByDefault: true,
-		helpLinkUri: "https://badeend.github.io/EnumClass/diagnostics/EC1001.html",
-		customTags: [WellKnownDiagnosticTags.NotConfigurable]);
-
-	private static readonly DiagnosticDescriptor EnumCaseVisibilityDiagnostic = new(
-		id: "EC1002",
-		title: "Enum case must be at least as visible as the containing enum class",
-		messageFormat: "Enum case must be at least as visible as the containing enum class",
-		category: DiagnosticCategory.Declaration,
-		defaultSeverity: DiagnosticSeverity.Error,
-		isEnabledByDefault: true,
-		helpLinkUri: "https://badeend.github.io/EnumClass/diagnostics/EC1002.html",
-		customTags: [WellKnownDiagnosticTags.NotConfigurable]);
-
-	private static readonly DiagnosticDescriptor MissingParameterlessPrivateConstructorDiagnostic = new(
-		id: "EC1003",
-		title: "Enum class must declare a private constructor to prevent external extension",
-		messageFormat: "Enum class must declare a private constructor to prevent external extension",
-		category: DiagnosticCategory.Declaration,
-		defaultSeverity: DiagnosticSeverity.Error,
-		isEnabledByDefault: true,
-		helpLinkUri: "https://badeend.github.io/EnumClass/diagnostics/EC1003.html",
-		customTags: [WellKnownDiagnosticTags.NotConfigurable]);
-
-	private static readonly DiagnosticDescriptor PrimaryConstructorsNotAllowedDiagnostic = new(
-		id: "EC1004",
-		title: "Primary constructor not allowed on enum class",
-		messageFormat: "Primary constructor not allowed on enum class",
-		category: DiagnosticCategory.Declaration,
-		defaultSeverity: DiagnosticSeverity.Error,
-		isEnabledByDefault: true,
-		helpLinkUri: "https://badeend.github.io/EnumClass/diagnostics/EC1004.html",
-		customTags: [WellKnownDiagnosticTags.NotConfigurable]);
-
-	private static readonly DiagnosticDescriptor PublicConstructorsNotAllowedDiagnostic = new(
-		id: "EC1005",
-		title: "Externally accessible constructor not allowed on enum class",
-		messageFormat: "Externally accessible constructor not allowed on enum class",
-		category: DiagnosticCategory.Declaration,
-		defaultSeverity: DiagnosticSeverity.Error,
-		isEnabledByDefault: true,
-		helpLinkUri: "https://badeend.github.io/EnumClass/diagnostics/EC1005.html",
-		customTags: [WellKnownDiagnosticTags.NotConfigurable]);
-
-	private static readonly DiagnosticDescriptor InvalidCasePlacementDiagnostic = new(
-		id: "EC1006",
-		title: "Incorrectly placed enum case",
-		messageFormat: "Incorrectly placed enum case. Enum cases must be placed as a direct child of their base class.",
-		category: DiagnosticCategory.Declaration,
-		defaultSeverity: DiagnosticSeverity.Error,
-		isEnabledByDefault: true,
-		helpLinkUri: "https://badeend.github.io/EnumClass/diagnostics/EC1006.html",
-		customTags: [WellKnownDiagnosticTags.NotConfigurable]);
-
-	private static readonly DiagnosticDescriptor CaseTypeParametersDiagnostic = new(
-		id: "EC1007",
-		title: "Enum case may not declare type parameters",
-		messageFormat: "Enum case may not declare type parameters. Any type parameter should be declared on the parent enum class.",
-		category: DiagnosticCategory.Declaration,
-		defaultSeverity: DiagnosticSeverity.Error,
-		isEnabledByDefault: true,
-		helpLinkUri: "https://badeend.github.io/EnumClass/diagnostics/EC1007.html",
-		customTags: [WellKnownDiagnosticTags.NotConfigurable]);
-
-	private static readonly DiagnosticDescriptor BaseTypeSpecializationDiagnostic = new(
-		id: "EC1008",
-		title: "Enum case must extend parent class verbatim",
-		messageFormat: "Enum case must extend parent class verbatim. Expected base class to be `{0}`, found `{1}` instead.",
-		category: DiagnosticCategory.Declaration,
-		defaultSeverity: DiagnosticSeverity.Error,
-		isEnabledByDefault: true,
-		helpLinkUri: "https://badeend.github.io/EnumClass/diagnostics/EC1008.html",
-		customTags: [WellKnownDiagnosticTags.NotConfigurable]);
-
-	private static readonly DiagnosticDescriptor UnrelatedNestedTypeDiagnostic = new(
-		id: "EC1030",
-		title: "Nested type does not extend the enum class it is part of",
-		messageFormat: "Nested type does not extend the enum class it is part of. Therefore, it will not be considered a \"case\" of the enum class. If this is intentional, you can safely suppress this warning.",
-		category: DiagnosticCategory.Declaration,
-		defaultSeverity: DiagnosticSeverity.Warning,
-		isEnabledByDefault: true,
-		helpLinkUri: "https://badeend.github.io/EnumClass/diagnostics/EC1030.html");
-
-	private static readonly DiagnosticDescriptor NoCasesDiagnostic = new(
-		id: "EC1031",
-		title: "Enum class does not contain any cases",
-		messageFormat: "Enum class does not contain any cases and can therefore not be instantiated",
-		category: DiagnosticCategory.Declaration,
-		defaultSeverity: DiagnosticSeverity.Warning,
-		isEnabledByDefault: true,
-		helpLinkUri: "https://badeend.github.io/EnumClass/diagnostics/EC1031.html");
-
 	public override sealed ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create([
-		EnumClassMustBeAbstractDiagnostic,
-		EnumCaseOutsideEnumClassDiagnostic,
-		EnumCaseVisibilityDiagnostic,
-		MissingParameterlessPrivateConstructorDiagnostic,
-		PrimaryConstructorsNotAllowedDiagnostic,
-		PublicConstructorsNotAllowedDiagnostic,
-		InvalidCasePlacementDiagnostic,
-		CaseTypeParametersDiagnostic,
-		BaseTypeSpecializationDiagnostic,
-		UnrelatedNestedTypeDiagnostic,
-		NoCasesDiagnostic,
+		Diagnostics.EC1000_EnumClassMustBeAbstract,
+		Diagnostics.EC1001_EnumCaseOutsideEnumClass,
+		Diagnostics.EC1002_EnumCaseVisibility,
+		Diagnostics.EC1003_MissingParameterlessPrivateConstructor,
+		Diagnostics.EC1004_PrimaryConstructorsNotAllowed,
+		Diagnostics.EC1005_PublicConstructorsNotAllowed,
+		Diagnostics.EC1006_InvalidCasePlacement,
+		Diagnostics.EC1007_CaseTypeParameters,
+		Diagnostics.EC1008_BaseTypeSpecialization,
+		Diagnostics.EC1030_UnrelatedNestedType,
+		Diagnostics.EC1031_NoCases,
 	]);
 
 	public override sealed void Initialize(AnalysisContext context)
@@ -163,7 +55,7 @@ public sealed class DeclarationAnalyzer : DiagnosticAnalyzer
 	{
 		if (!enumClass.IsAbstract)
 		{
-			ReportDiagnostic(context, enumClass, EnumClassMustBeAbstractDiagnostic);
+			ReportDiagnostic(context, enumClass, Diagnostics.EC1000_EnumClassMustBeAbstract);
 		}
 
 		foreach (var constructor in enumClass.InstanceConstructors)
@@ -174,7 +66,7 @@ public sealed class DeclarationAnalyzer : DiagnosticAnalyzer
 		var hasCases = enumClass.GetTypeMembers().Any(c => c.BaseType is { } baseType && AreOfTheSameGenericType(enumClass, baseType));
 		if (!hasCases)
 		{
-			ReportDiagnostic(context, enumClass, NoCasesDiagnostic);
+			ReportDiagnostic(context, enumClass, Diagnostics.EC1031_NoCases);
 		}
 	}
 
@@ -189,15 +81,15 @@ public sealed class DeclarationAnalyzer : DiagnosticAnalyzer
 					return;
 
 				case ConstructorKind.ImplicitParameterless:
-					ReportDiagnostic(context, enumClass.Locations, MissingParameterlessPrivateConstructorDiagnostic);
+					ReportDiagnostic(context, enumClass.Locations, Diagnostics.EC1003_MissingParameterlessPrivateConstructor);
 					break;
 
 				case ConstructorKind.Primary:
-					ReportDiagnostic(context, GetPrimaryConstructorLocationsToReport(enumClass), PrimaryConstructorsNotAllowedDiagnostic);
+					ReportDiagnostic(context, GetPrimaryConstructorLocationsToReport(enumClass), Diagnostics.EC1004_PrimaryConstructorsNotAllowed);
 					break;
 
 				case ConstructorKind.Regular:
-					ReportDiagnostic(context, constructor.Locations, PublicConstructorsNotAllowedDiagnostic);
+					ReportDiagnostic(context, constructor.Locations, Diagnostics.EC1005_PublicConstructorsNotAllowed);
 					break;
 
 				default:
@@ -212,26 +104,26 @@ public sealed class DeclarationAnalyzer : DiagnosticAnalyzer
 		{
 			if (enumCase.ContainingType is not null && AreOfTheSameGenericType(enumClass, enumCase.ContainingType))
 			{
-				ReportDiagnostic(context, GetBaseClassLocationsToReport(enumCase), BaseTypeSpecializationDiagnostic, GetFormattedTypeName(enumCase.ContainingType.OriginalDefinition), GetFormattedTypeName(enumClass));
+				ReportDiagnostic(context, GetBaseClassLocationsToReport(enumCase), Diagnostics.EC1008_BaseTypeSpecialization, GetFormattedTypeName(enumCase.ContainingType.OriginalDefinition), GetFormattedTypeName(enumClass));
 			}
 			else if (IsDeeplyNestedInside(enumClass, enumCase))
 			{
-				ReportDiagnostic(context, enumCase, InvalidCasePlacementDiagnostic);
+				ReportDiagnostic(context, enumCase, Diagnostics.EC1006_InvalidCasePlacement);
 			}
 			else
 			{
-				ReportDiagnostic(context, enumCase, EnumCaseOutsideEnumClassDiagnostic);
+				ReportDiagnostic(context, enumCase, Diagnostics.EC1001_EnumCaseOutsideEnumClass);
 			}
 		}
 
 		if (enumCase.DeclaredAccessibility <= Accessibility.Private || enumCase.DeclaredAccessibility < enumClass.DeclaredAccessibility)
 		{
-			ReportDiagnostic(context, enumCase, EnumCaseVisibilityDiagnostic);
+			ReportDiagnostic(context, enumCase, Diagnostics.EC1002_EnumCaseVisibility);
 		}
 
 		if (enumCase.TypeParameters.IsEmpty == false)
 		{
-			ReportDiagnostic(context, GetTypeParameterLocationsToReport(enumCase), CaseTypeParametersDiagnostic);
+			ReportDiagnostic(context, GetTypeParameterLocationsToReport(enumCase), Diagnostics.EC1007_CaseTypeParameters);
 		}
 	}
 
@@ -319,7 +211,7 @@ public sealed class DeclarationAnalyzer : DiagnosticAnalyzer
 	{
 		if (type.TypeKind == TypeKind.Class && GetContainingTypeAsEnumClass(type) is not null)
 		{
-			ReportDiagnostic(context, type, UnrelatedNestedTypeDiagnostic);
+			ReportDiagnostic(context, type, Diagnostics.EC1030_UnrelatedNestedType);
 		}
 	}
 

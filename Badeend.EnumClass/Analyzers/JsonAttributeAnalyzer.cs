@@ -9,27 +9,9 @@ namespace Badeend.EnumClass.Analyzers;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public sealed class JsonAttributeAnalyzer : DiagnosticAnalyzer
 {
-	private static readonly DiagnosticDescriptor JsonDiscriminatorOnNonEnumCaseDiagnostic = new(
-		id: "EC3001",
-		title: "Useless [JsonDiscriminator] attribute",
-		messageFormat: "The [JsonDiscriminator] attribute only applies to enum class cases and won't have any effect here",
-		category: DiagnosticCategory.Miscellaneous,
-		defaultSeverity: DiagnosticSeverity.Warning,
-		isEnabledByDefault: true,
-		helpLinkUri: "https://badeend.github.io/EnumClass/diagnostics/EC3001.html");
-
-	private static readonly DiagnosticDescriptor JsonDiscriminatorOnNestedEnumClassDiagnostic = new(
-		id: "EC3002",
-		title: "Useless [JsonDiscriminator] attribute",
-		messageFormat: "The [JsonDiscriminator] attribute does not have any effect when placed on the base type of a nested enum class. If you want to customize the discriminator, annotate the individual sub-cases instead.",
-		category: DiagnosticCategory.Miscellaneous,
-		defaultSeverity: DiagnosticSeverity.Warning,
-		isEnabledByDefault: true,
-		helpLinkUri: "https://badeend.github.io/EnumClass/diagnostics/EC3002.html");
-
 	public override sealed ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create([
-		JsonDiscriminatorOnNonEnumCaseDiagnostic,
-		JsonDiscriminatorOnNestedEnumClassDiagnostic,
+		Diagnostics.EC3001_JsonDiscriminatorOnNonEnumCase,
+		Diagnostics.EC3002_JsonDiscriminatorOnNestedEnumClass,
 	]);
 
 	public override sealed void Initialize(AnalysisContext context)
@@ -59,11 +41,11 @@ public sealed class JsonAttributeAnalyzer : DiagnosticAnalyzer
 		var baseType = type.BaseType;
 		if (baseType is null || !baseType.HasEnumClassAttribute())
 		{
-			ReportDiagnostic(context, location, JsonDiscriminatorOnNonEnumCaseDiagnostic);
+			ReportDiagnostic(context, location, Diagnostics.EC3001_JsonDiscriminatorOnNonEnumCase);
 		}
 		else if (type.HasEnumClassAttribute())
 		{
-			ReportDiagnostic(context, location, JsonDiscriminatorOnNestedEnumClassDiagnostic);
+			ReportDiagnostic(context, location, Diagnostics.EC3002_JsonDiscriminatorOnNestedEnumClass);
 		}
 	}
 

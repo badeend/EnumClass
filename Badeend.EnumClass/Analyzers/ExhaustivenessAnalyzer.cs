@@ -11,29 +11,10 @@ public abstract class ExhaustivenessAnalyzer : DiagnosticAnalyzer
 {
 	protected abstract DiagnosticDescriptor NotExhaustiveDiagnostic { get; }
 
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("MicrosoftCodeAnalysisDesign", "RS1032:Define diagnostic message correctly", Justification = "The individual reports end with a period in their message")]
-	private static readonly DiagnosticDescriptor UnreachablePatternDiagnostic = new(
-		id: "EC2003",
-		title: "Unreachable pattern",
-		messageFormat: "Unreachable pattern. {0}",
-		category: DiagnosticCategory.Usage,
-		defaultSeverity: DiagnosticSeverity.Warning,
-		isEnabledByDefault: true,
-		helpLinkUri: "https://badeend.github.io/EnumClass/diagnostics/EC2003.html");
-
-	private static readonly DiagnosticDescriptor NoCaseImplementsInterfaceDiagnostic = new(
-		id: "EC2004",
-		title: "None of the enum cases implement this interface",
-		messageFormat: "None of the enum cases implement this interface",
-		category: DiagnosticCategory.Usage,
-		defaultSeverity: DiagnosticSeverity.Warning,
-		isEnabledByDefault: true,
-		helpLinkUri: "https://badeend.github.io/EnumClass/diagnostics/EC2004.html");
-
 	public override sealed ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create([
 		this.NotExhaustiveDiagnostic,
-		UnreachablePatternDiagnostic,
-		NoCaseImplementsInterfaceDiagnostic,
+		Diagnostics.EC2003_UnreachablePattern,
+		Diagnostics.EC2004_NoCaseImplementsInterface,
 	]);
 
 	protected void AnalyzeSwitch(SyntaxNodeAnalysisContext context, ExpressionSyntax governingExpression, SyntaxToken switchKeyword, IEnumerable<Pattern> patterns)
@@ -96,7 +77,7 @@ public abstract class ExhaustivenessAnalyzer : DiagnosticAnalyzer
 				{
 					if (!matchedAnyNewCases)
 					{
-						ReportDiagnostic(context, typeCheck.Node, UnreachablePatternDiagnostic, "This pattern has already been handled by previous matches.");
+						ReportDiagnostic(context, typeCheck.Node, Diagnostics.EC2003_UnreachablePattern, "This pattern has already been handled by previous matches.");
 					}
 				}
 				else
@@ -105,7 +86,7 @@ public abstract class ExhaustivenessAnalyzer : DiagnosticAnalyzer
 
 					if (typeCheck.Type.TypeKind == TypeKind.Interface)
 					{
-						ReportDiagnostic(context, typeCheck.Node, NoCaseImplementsInterfaceDiagnostic);
+						ReportDiagnostic(context, typeCheck.Node, Diagnostics.EC2004_NoCaseImplementsInterface);
 					}
 
 					// Let CS8510 ("The pattern is unreachable. ...") handle the rest.
@@ -180,7 +161,7 @@ public abstract class ExhaustivenessAnalyzer : DiagnosticAnalyzer
 	{
 		if (cases.All(c => c.Match == CaseMatch.Full))
 		{
-			ReportDiagnostic(context, pattern.Node, UnreachablePatternDiagnostic, "All enum cases have already been handled.");
+			ReportDiagnostic(context, pattern.Node, Diagnostics.EC2003_UnreachablePattern, "All enum cases have already been handled.");
 		}
 	}
 

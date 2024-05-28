@@ -11,7 +11,7 @@ namespace Badeend.EnumClass.CodeFixes;
 [Shared]
 public sealed class EC1030CodeFix : BaseCodeFix
 {
-	public override string DiagnosticId => "EC1030";
+	public override string DiagnosticId => Diagnostics.EC1030;
 
 	public override void SetUpCodeFixes(CodeFixContext context, SyntaxNode node)
 	{

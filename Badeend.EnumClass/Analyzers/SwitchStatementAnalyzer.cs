@@ -1,4 +1,3 @@
-using Badeend.EnumClass.Internals;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -9,14 +8,7 @@ namespace Badeend.EnumClass.Analyzers;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public sealed class SwitchStatementAnalyzer : ExhaustivenessAnalyzer
 {
-	protected override DiagnosticDescriptor NotExhaustiveDiagnostic { get; } = new(
-		id: "EC2002",
-		title: "Switch statement on enum class is not exhaustive",
-		messageFormat: "Switch is not exhaustive. {0}",
-		category: DiagnosticCategory.Usage,
-		defaultSeverity: DiagnosticSeverity.Warning,
-		isEnabledByDefault: true,
-		helpLinkUri: "https://badeend.github.io/EnumClass/diagnostics/EC2002.html");
+	protected override DiagnosticDescriptor NotExhaustiveDiagnostic { get; } = Diagnostics.EC2002_NotExhaustive;
 
 	public override sealed void Initialize(AnalysisContext context)
 	{
