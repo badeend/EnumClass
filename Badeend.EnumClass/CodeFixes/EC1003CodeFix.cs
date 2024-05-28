@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Composition;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -12,9 +13,11 @@ namespace Badeend.EnumClass.CodeFixes;
 [Shared]
 public sealed class EC1003CodeFix : BaseCodeFix
 {
-	public override string DiagnosticId => Diagnostics.EC1003;
+	public override sealed ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create([
+			Diagnostics.EC1003,
+	]);
 
-	public override void SetUpCodeFixes(CodeFixContext context, SyntaxNode node)
+	protected override void SetUpCodeFixes(CodeFixContext context, SyntaxNode node)
 	{
 		if (node is TypeDeclarationSyntax declaration)
 		{

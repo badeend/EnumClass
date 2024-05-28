@@ -1,4 +1,3 @@
-using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -9,16 +8,9 @@ namespace Badeend.EnumClass.CodeFixes;
 public abstract class BaseCodeFix : CodeFixProvider
 {
 	/// <summary>
-	/// The identifier string emitted by the analyzer.
-	/// </summary>
-	public abstract string DiagnosticId { get; }
-
-	/// <summary>
 	/// The `node` parameter is the node on which the analyzer reported the diagnostic.
 	/// </summary>
-	public abstract void SetUpCodeFixes(CodeFixContext context, SyntaxNode node);
-
-	public override sealed ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(this.DiagnosticId);
+	protected abstract void SetUpCodeFixes(CodeFixContext context, SyntaxNode node);
 
 	public override sealed FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
