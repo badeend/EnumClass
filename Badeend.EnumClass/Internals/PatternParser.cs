@@ -6,6 +6,11 @@ namespace Badeend.EnumClass.Internals;
 
 internal sealed class PatternParser(SemanticModel semanticModel)
 {
+	internal IEnumerable<Pattern> Parse(IsPatternExpressionSyntax isExpression)
+	{
+		return this.Parse(isExpression.Pattern);
+	}
+
 	internal IEnumerable<Pattern> Parse(SwitchExpressionSyntax switchExpression)
 	{
 		return switchExpression.Arms.SelectMany(arm => ApplyWhenClause(this.Parse(arm.Pattern), arm.WhenClause));
@@ -55,7 +60,7 @@ internal sealed class PatternParser(SemanticModel semanticModel)
 		_ => [new Pattern.Other(pattern)],
 	};
 
-	private IEnumerable<Pattern> ParseExpression(ExpressionSyntax expression, bool partial)
+	internal IEnumerable<Pattern> ParseExpression(ExpressionSyntax expression, bool partial)
 	{
 		if (IsNullLiteral(expression))
 		{

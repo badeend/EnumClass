@@ -15,17 +15,36 @@ internal sealed class CaseAnalyzer(
 	{
 		var patterns = new PatternParser(semanticModel).Parse(switchExpression);
 
-		return this.AnalyzeSwitch(switchExpression.GoverningExpression, patterns);
+		return this.AnalyzePatternMatch(switchExpression.GoverningExpression, patterns);
 	}
 
 	internal CaseAnalysis? Analyze(SwitchStatementSyntax switchStatement)
 	{
 		var patterns = new PatternParser(semanticModel).Parse(switchStatement);
 
-		return this.AnalyzeSwitch(switchStatement.Expression, patterns);
+		return this.AnalyzePatternMatch(switchStatement.Expression, patterns);
 	}
 
-	private CaseAnalysis? AnalyzeSwitch(ExpressionSyntax governingExpression, IEnumerable<Pattern> patterns)
+	internal CaseAnalysis? Analyze(IsPatternExpressionSyntax isExpression)
+	{
+		var patterns = new PatternParser(semanticModel).Parse(isExpression);
+
+		return this.AnalyzePatternMatch(isExpression.Expression, patterns);
+	}
+
+	internal CaseAnalysis? Analyze(BinaryExpressionSyntax isExpression)
+	{
+		if (!isExpression.OperatorToken.IsKind(SyntaxKind.IsKeyword))
+		{
+			return null;
+		}
+
+		var patterns = new PatternParser(semanticModel).ParseExpression(isExpression.Right, partial: false);
+
+		return this.AnalyzePatternMatch(isExpression.Left, patterns);
+	}
+
+	private CaseAnalysis? AnalyzePatternMatch(ExpressionSyntax governingExpression, IEnumerable<Pattern> patterns)
 	{
 		var enumClassType = semanticModel.GetEnumClassType(governingExpression);
 		if (enumClassType is null)
