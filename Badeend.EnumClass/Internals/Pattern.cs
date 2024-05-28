@@ -3,8 +3,7 @@ using Microsoft.CodeAnalysis;
 namespace Badeend.EnumClass.Internals;
 
 // If only we could apply [EnumClass] here :)
-// TODO: make internal
-public abstract record Pattern(SyntaxNode Node)
+internal abstract record Pattern(SyntaxNode Node)
 {
 	/// <summary>
 	/// Pattern matches _any_ value.
