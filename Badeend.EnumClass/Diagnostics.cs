@@ -133,7 +133,7 @@ internal static class Diagnostics
 	internal static readonly DiagnosticDescriptor EC1031_NoCases = new(
 		id: EC1031,
 		title: "Enum class does not contain any cases",
-		messageFormat: "Enum class does not contain any cases and can therefore not be instantiated",
+		messageFormat: "Enum class does not contain any cases",
 		category: Category.Declaration,
 		defaultSeverity: DiagnosticSeverity.Warning,
 		isEnabledByDefault: true,
