@@ -67,7 +67,7 @@ public sealed class EC2001_EC2002CodeFix : BaseCodeFix
 
 		if (analysis.IsMissingNullCheck)
 		{
-			patterns = patterns.Concat([NullPattern()]);
+			patterns = new[] { NullPattern() }.Concat(patterns);
 		}
 
 		return patterns;
