@@ -55,4 +55,92 @@ Continuing with the example from above:
 - The analyzers enforce that the base type and nested subtypes satisfy all the required criteria for them to be worthy of the title "enum class". Some of these criteria can be seen right there in the example: `abstract` base type, private constructor, cases extend their parent type, etc... All for the ultimate goal:
 - `Shape` is now **guarded against external extension** and we can be sure that any `Shape` instance we encounter at runtime will be: either a `Circle`, a `Rectangle` or a `Triangle`. Exactly one those three and _nothing more_.
 
-Given that all the subtypes/cases are known at compile-time, we can enforce that any `switch`-expression/statement on them is **exhaustive**. I.e. we can warn developers when they've missed a case and provide them with a codefix to automatically add those missing cases. This may sound menial at first, but it can significantly improve the robustness of your application!
+Given that all the subtypes/cases are known at compile-time, we can enforce that any `switch`-expression/statement on them is **exhaustive**. I.e. we can warn developers when they've missed a case and provide them with a codefix to automatically add those missing cases. This may sound menial at first, but it has the potential to significantly improve the robustness of your application!
+
+For more info, query your favorite search engine for: "Type-Driven Design" and "Make illegal states unrepresentable".
+
+
+## The expression problem
+
+Enum classes creep into the territory traditionally solely occupied by `interface`s. <sub>(or publicly extendable abstract base classes, but for all intents and purposes of this article I'll consider them to be equivalent to interfaces.)</sub>
+
+Both enum classes and interfaces represent a type that can be "one of multiple things". The distinction is laid out below:
+
+<table>
+    <thead>
+        <tr>
+            <th style="width: 50%;">Enum classes</th>
+            <th style="width: 50%;">Interfaces</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                Typical usage: as a <b>concrete data</b> type.
+            </td>
+            <td>
+                Typical usage: to <b>abstract</b> away <b>behavior</b>.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                The set of possible cases is <b>closed</b><br/> and known at <b>compile time</b>.
+            </td>
+            <td>
+                The set of possible implementations is <b>open</b><br/> and can't be known until <b>run time</b>.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                The cases are part of the <b>public contract</b>.<br/> Consumers need to be aware of them.
+            </td>
+            <td>
+                The implementations are an <b>implementation detail</b>.<br/> Consumers of the interface shouldn't need to be aware of them.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Adding a <i>new operation</i> to an existing enum class:
+                <ul>
+                    <li>✅ is backwards-compatible</li>
+                    <li>✅ can be done by anyone & anywhere</li>
+                    <li>✅ implementation lives in only a single place</li>
+                </ul>
+            </td>
+            <td>
+                Adding a <i>new operation</i> to an existing interface:
+                <ul>
+                    <li>⛔ is backwards-incompatible</li>
+                    <li>⛔ can only be done by the owner of the interface</li>
+                    <li>⛔ implementation is scattered around in many places</li>
+                </ul>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Adding a <i>new case</i> to an existing enum class:
+                <ul>
+                    <li>⛔ is backwards-incompatible</li>
+                    <li>⛔ can only be done by the owner of the enum class</li>
+                    <li>⛔ all places consuming the type need to be aware of this change</li>
+                </ul>
+            </td>
+            <td>
+                Adding a <i>new implementation</i> for an existing interface:
+                <ul>
+                    <li>✅ is backwards-compatible</li>
+                    <li>✅ can be done by anyone & anywhere</li>
+                    <li>✅ implementation lives in only a single place</li>
+                </ul>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="text-align: center; font-style: italic;">
+                As always, the real world isn't as black and white as this table makes it out to be.<br/>
+                Interfaces can define methods with default implementations and<br/>
+                enum classes can (ab)use inheritance between their base type & case types and/or even implement interfaces themselves.<br/>
+                ¯\_(ツ)_/¯
+            </td>
+        </tr>
+    </tbody>
+</table>
