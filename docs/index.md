@@ -13,20 +13,22 @@ It is loosely based on the [C# proposal](https://github.com/dotnet/csharplang/bl
 public enum class Shape
 {
     Circle(float Radius),
-    Rectangle(float Width, float Length),
+    Rectangle(float Width, float Height),
     Triangle(float SideLength),
 }
 ```
 
 Unfortunately, since we don't live in the future, this is the actual syntax we'll be working with today:
 ```cs
+using Badeend;
+
 [EnumClass]
 public abstract record Shape
 {
     private Shape() {}
 
     public record Circle(float Radius) : Shape;
-    public record Rectangle(float Width, float Length) : Shape;
+    public record Rectangle(float Width, float Height) : Shape;
     public record Triangle(float SideLength) : Shape;
 }
 ```
@@ -55,16 +57,43 @@ Continuing with the example from above:
 - The analyzers enforce that the base type and nested subtypes satisfy all the required criteria for them to be worthy of the title "enum class". Some of these criteria can be seen right there in the example: `abstract` base type, private constructor, cases extend their parent type, etc... All for the ultimate goal:
 - `Shape` is now **guarded against external extension** and we can be sure that any `Shape` instance we encounter at runtime will be: either a `Circle`, a `Rectangle` or a `Triangle`. Exactly one those three and _nothing more_.
 
-Given that all the subtypes/cases are known at compile-time, we can enforce that any `switch`-expression/statement on them is **exhaustive**. I.e. we can warn developers when they've missed a case and provide them with a codefix to automatically add those missing cases. This may sound menial at first, but it has the potential to significantly improve the robustness of your application!
+## Exhaustiveness checking
 
-For more info, query your favorite search engine for: "Type-Driven Design" and "Make illegal states unrepresentable".
+This is where the real power starts to shine through: all the subtypes/cases are known at compile-time so we can enforce that any `switch`-expression/statement on them is **exhaustive**. I.e. we can warn developers when they've missed a case:
+
+```cs
+var area = shape switch // Warning EC2001: Switch is not exhaustive. Unhandled cases: Triangle.
+{
+    Shape.Circle circle => Math.PI * circle.Radius * circle.Radius,
+    Shape.Rectangle rectangle => rectangle.Width * rectangle.Height,
+};
+```
+
+The analyzer warns us that we've not handled triangles yet. To save us some typing, it provides an `Add remaining cases` codefix that automatically appends the unhandled cases at the end of the `switch`:
+
+```diff
+  var area = shape switch
+  {
+      Shape.Circle circle => Math.PI * circle.Radius * circle.Radius,
+      Shape.Rectangle rectangle => rectangle.Width * rectangle.Height,
++     Shape.Triangle triangle => ,
+  };
+```
+
+Ofcourse it is still up to us to actually define how to compute the area of a triangle.
+
+---
+
+At this point, we've successfully prevented the program from blowing up, and turned a runtime error into a compile-time error.
+
+Yay!
 
 
 ## The expression problem
 
-Enum classes creep into the territory traditionally solely occupied by `interface`s. <sub>(or publicly extendable abstract base classes, but for all intents and purposes of this article I'll consider them to be equivalent to interfaces.)</sub>
+Enum classes creep into the territory traditionally occupied by `interface`s <sub>(or publicly extendable abstract base classes, but for this comparison I consider them to be equivalent to interfaces).</sub>
 
-Both enum classes and interfaces represent a type that can be "one of multiple things". The distinction is laid out below:
+Both enum classes and interfaces are types that represent _"one of multiple things"_. I've tried to summarize the distinction below:
 
 <table>
     <thead>
