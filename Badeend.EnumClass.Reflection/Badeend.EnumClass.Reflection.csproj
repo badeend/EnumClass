@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <PackageId>Badeend.EnumClass.Reflection</PackageId>
-    <Description>TODO</Description>
+    <Description>Runtime reflection for enum classes created using the main `Badeend.EnumClass` package.</Description>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
   </PropertyGroup>
 </Project>

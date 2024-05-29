@@ -3,16 +3,18 @@
 </p>
 
 <p align="center">
-  <em>TODO</em>
+  <em>Enums with payloads</em>
 </p>
 
 <p align="center">
-  <a href="https://www.nuget.org/packages/Badeend.EnumClass.Reflection"><img src="https://img.shields.io/nuget/v/Badeend.EnumClass.Reflection" alt="Nuget"/></a>
+  <a href="https://www.nuget.org/packages/Badeend.EnumClass"><img src="https://img.shields.io/nuget/v/Badeend.EnumClass" alt="Nuget"/></a>
 </p>
 
 ---
 
-TODO
+This is an analyzer-only package that aims to provide a dead simple, yet complete, "discriminated unions" experience for C# with compile-time exhaustiveness checking.
+
+**More information on the project website: https://badeend.github.io/EnumClass/**
 
 ---
 

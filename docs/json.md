@@ -71,7 +71,7 @@ By default, the _type names_ of the enum cases are used as discriminator values:
 ```
 
 ###### DiscriminatorNamingPolicy
-When calling `.AddEnumClasses()` you can optionally pass any [`JsonNamingPolicy`](https://learn.microsoft.com/en-us/dotnet/api/system.text.json.jsonnamingpolicy) to alter the default naming scheme. For example:
+When calling `.AddEnumClasses()` you can optionally pass a [`JsonNamingPolicy`](https://learn.microsoft.com/en-us/dotnet/api/system.text.json.jsonnamingpolicy) to alter the default naming scheme. For example:
 
 ```cs
 options.AddEnumClasses(new() { DiscriminatorNamingPolicy = JsonNamingPolicy.KebabCaseLower });
@@ -106,7 +106,7 @@ public abstract record Shape
 ```
 
 #### Discriminator property name
-By default, `System.Text.Json` uses `$type` as the discriminator property name. You can still continue to use the `[JsonPolymorphic]` attribute to configure this (and other) settings. For example:
+By default, `System.Text.Json` uses `$type` as the discriminator property name. You can still use the `[JsonPolymorphic]` attribute to configure this (and other) settings. For example:
 
 ```cs
 [EnumClass]

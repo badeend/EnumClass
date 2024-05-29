@@ -1,4 +1,6 @@
-TODO
+This is an analyzer-only package that aims to provide a dead simple, yet complete, "discriminated unions" experience for C# with compile-time exhaustiveness checking.
+
+**More information on the project website: https://badeend.github.io/EnumClass/**
 
 ---
 
