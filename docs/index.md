@@ -89,17 +89,21 @@ At this point, we've successfully prevented the program from blowing up, and tur
 Yay!
 
 
-## The expression problem
+## Comparison with interfaces
 
-Enum classes creep into the territory traditionally occupied by `interface`s <sub>(or publicly extendable abstract base classes, but for this comparison I consider them to be equivalent to interfaces).</sub>
-
-Both enum classes and interfaces are types that represent _"one of multiple things"_. I've tried to summarize the distinction below:
+Both enum classes and interfaces can be used to represent _"one of multiple things"_. I've tried to summarize the distinction below:
 
 <table>
     <thead>
         <tr>
-            <th style="width: 50%;">Enum classes</th>
-            <th style="width: 50%;">Interfaces</th>
+            <th style="width: 50%;">
+                Enum classes<br/>
+                <sub>(and regular enums)</sub>
+            </th>
+            <th style="width: 50%;">
+                Interfaces<br/>
+                <sub>(and publicly extendable abstract base classes)</sub>
+            </th>
         </tr>
     </thead>
     <tbody>
