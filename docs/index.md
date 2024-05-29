@@ -49,17 +49,17 @@ dotnet add package Badeend.EnumClass.SystemTextJson
 
 ## More introduction
 
-All the magic happens at compile-time, as part of the analyzers shipped with this package.
+All the magic happens at compile-time as part of the analyzers shipped with this package.
 
 Continuing with the example from above:
 - We define a `Shape` "enum" type, that has three "case" types: `Circle`, `Rectangle` & `Triangle`.
 - The `Shape` type has an `[EnumClass]` attribute, which is the cue for the analyzers to kick in.
 - The analyzers enforce that the base type and nested subtypes satisfy all the required criteria for them to be worthy of the title "enum class". Some of these criteria can be seen right there in the example: `abstract` base type, private constructor, cases extend their parent type, etc... All for the ultimate goal:
-- `Shape` is now **guarded against external extension** and we can be sure that any `Shape` instance we encounter at runtime will be: either a `Circle`, a `Rectangle` or a `Triangle`. Exactly one those three and _nothing more_.
+- `Shape` is now protected against external extension and we can be sure that any `Shape` instance we encounter at runtime will be either a `Circle`, a `Rectangle` or a `Triangle`. Exactly one of those three and _nothing else_.
 
 ## Exhaustiveness checking
 
-This is where the real power starts to shine through: all the subtypes/cases are known at compile-time so we can enforce that any `switch`-expression/statement on them is **exhaustive**. I.e. we can warn developers when they've missed a case:
+This is the true superpower of enum classes: all the subtypes are known at compile-time, so we can enforce that every `switch`-expression/statement on them is **exhaustive**. I.e. we can warn developers when they've missed a case:
 
 ```cs
 var area = shape switch // Warning EC2001: Switch is not exhaustive. Unhandled cases: Triangle.
@@ -88,6 +88,54 @@ At this point, we've successfully prevented the program from blowing up, and tur
 
 Yay!
 
+## Codefixes FTW
+
+At the bare minimum you need to write the following code yourself:
+
+```cs
+[EnumClass]
+record Shape
+{
+    record Circle(float Radius);
+    record Rectangle(float Width, float Height);
+    record Triangle(float SideLength);
+}
+
+var area = shape switch
+{
+};
+```
+
+... and can then use the codefixes to autocomplete yourself into this:
+
+```cs
+[EnumClass]
+abstract record Shape
+{
+    private Shape()
+    {
+        // Private constructor to prevent external extension.
+    }
+
+    public record Circle(float Radius) : Shape;
+    public record Rectangle(float Width, float Height) : Shape;
+    public record Triangle(float SideLength) : Shape;
+}
+
+var area = shape switch
+{
+    Shape.Circle circle => ,
+    Shape.Rectangle rectangle => ,
+    Shape.Triangle triangle => ,
+};
+```
+
+Applied fixes:
+- On enum class: `Make abstract`
+- On enum class: `Add private constructor`
+- On enum cases: `Extend Shape`
+- On enum cases: `Make public`
+- On switch expression: `Add remaining cases`
 
 ## Comparison with interfaces
 
