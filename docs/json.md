@@ -61,7 +61,7 @@ public abstract record Shape
 ```
 
 ###### Default
-By default, the _type names_ of the enum cases are used as discriminator values:
+By default, the _type name_ of the enum case are used as discriminator value:
 
 ```json
 {

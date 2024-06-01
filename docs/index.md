@@ -137,6 +137,66 @@ Applied fixes:
 - On enum cases: `Make public`
 - On switch expression: `Add remaining cases`
 
+## Practical example
+
+So far we've been working with the rather theoretical `Shape` example. Next, we'll take a look at something that you might actually encounter in the real world.
+
+Let's assume we're building some kind of background processing service and we want to be able to query the current state of a background job along with relevant metadata. One way to model this state could be:
+
+```cs
+public enum JobState
+{
+    Pending,
+    Running,
+    Finished,
+    Failed,
+}
+
+public record Job
+{
+    public Guid Id { get; init; }
+    public JobState State { get; init; } // Current state of the job.
+    public float Progress { get; init; } // Current progress. Percentage between 0 and 100.
+    public byte[] Output { get; init; } // Result of the job.
+    public string ErrorMessage { get; init; } // Reason why the job failed.
+    public DateTime DeleteAfter { get; init; } // Automatically remove the job from the queue after this timestamp.
+}
+```
+
+At first glance, this looks like regular run-of-the-mill C# code. However, a few questions pop up:
+- What is the value of `Output` when the job hasn't `Finished` yet? Is it null? Is it an empty array? Will it throw?
+- Similarly for the `ErrorMessage` property: what will its value be when the job didn't fail?
+- What is the `Progress` of a `Failed` job? `0`? `100`? The last progress before it failed? It throws? Who knows...
+
+These issues could be resolved by simply adding more documentation and/or annotating the properties to be nullable. _Or,_ we can take advantage of the type system:
+
+```cs
+[EnumClass]
+public abstract record JobState
+{
+    private JobState() {}
+
+    public record Pending : JobState;
+    public record Running(float Progress) : JobState;
+    public record Finished(byte[] Output) : JobState;
+    public record Failed(string ErrorMessage) : JobState;
+}
+
+public record Job
+{
+    public Guid Id { get; init; }
+    public JobState State { get; init; }
+    public DateTime DeleteAfter { get; init; }
+}
+```
+
+In this new design, all properties that were dependent on the `State` have been pushed into the `JobState` type. This resolves all of questions we had before:
+- only finished jobs have an `Output`,
+- only failed jobs have an `ErrorMessage`,
+- only in-progress jobs have a `Progress`.
+
+Preconditions that previously only lived inside comments or the heads of developers are now codified in the type system. And if you didn't notice already: **we've eliminated the need for any nullables or exceptions**. I.e. if a job has `Finished` it definitely has an `Output`, if a job has `Failed` it definitely has an `ErrorMessage`, etc.
+
 ## Comparison with interfaces
 
 Both enum classes and interfaces can be used to represent _"one of multiple things"_. I've tried to summarize the distinction below:
