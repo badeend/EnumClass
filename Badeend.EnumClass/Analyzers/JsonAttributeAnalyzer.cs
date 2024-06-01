@@ -10,8 +10,8 @@ namespace Badeend.EnumClass.Analyzers;
 public sealed class JsonAttributeAnalyzer : DiagnosticAnalyzer
 {
 	public override sealed ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create([
-		Diagnostics.EC3001_JsonDiscriminatorOnNonEnumCase,
-		Diagnostics.EC3002_JsonDiscriminatorOnNestedEnumClass,
+		Diagnostics.EC9001_JsonDiscriminatorOnNonEnumCase,
+		Diagnostics.EC9002_JsonDiscriminatorOnNestedEnumClass,
 	]);
 
 	public override sealed void Initialize(AnalysisContext context)
@@ -41,11 +41,11 @@ public sealed class JsonAttributeAnalyzer : DiagnosticAnalyzer
 		var baseType = type.BaseType;
 		if (baseType is null || !baseType.HasEnumClassAttribute())
 		{
-			ReportDiagnostic(context, location, Diagnostics.EC3001_JsonDiscriminatorOnNonEnumCase);
+			ReportDiagnostic(context, location, Diagnostics.EC9001_JsonDiscriminatorOnNonEnumCase);
 		}
 		else if (type.HasEnumClassAttribute())
 		{
-			ReportDiagnostic(context, location, Diagnostics.EC3002_JsonDiscriminatorOnNestedEnumClass);
+			ReportDiagnostic(context, location, Diagnostics.EC9002_JsonDiscriminatorOnNestedEnumClass);
 		}
 	}
 

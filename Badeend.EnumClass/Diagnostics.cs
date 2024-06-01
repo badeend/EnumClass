@@ -28,8 +28,8 @@ internal static class Diagnostics
 	internal const string EC2002 = nameof(EC2002);
 	internal const string EC2003 = nameof(EC2003);
 	internal const string EC2004 = nameof(EC2004);
-	internal const string EC3001 = nameof(EC3001);
-	internal const string EC3002 = nameof(EC3002);
+	internal const string EC9001 = nameof(EC9001);
+	internal const string EC9002 = nameof(EC9002);
 
 	internal static readonly DiagnosticDescriptor EC1000_EnumClassMustBeAbstract = new(
 		id: EC1000,
@@ -175,21 +175,21 @@ internal static class Diagnostics
 		isEnabledByDefault: true,
 		helpLinkUri: $"https://badeend.github.io/EnumClass/diagnostics/{EC2004}.html");
 
-	internal static readonly DiagnosticDescriptor EC3001_JsonDiscriminatorOnNonEnumCase = new(
-		id: EC3001,
+	internal static readonly DiagnosticDescriptor EC9001_JsonDiscriminatorOnNonEnumCase = new(
+		id: EC9001,
 		title: "Useless [JsonDiscriminator] attribute",
 		messageFormat: "The [JsonDiscriminator] attribute only applies to enum class cases and won't have any effect here",
 		category: Category.Miscellaneous,
 		defaultSeverity: DiagnosticSeverity.Warning,
 		isEnabledByDefault: true,
-		helpLinkUri: $"https://badeend.github.io/EnumClass/diagnostics/{EC3001}.html");
+		helpLinkUri: $"https://badeend.github.io/EnumClass/diagnostics/{EC9001}.html");
 
-	internal static readonly DiagnosticDescriptor EC3002_JsonDiscriminatorOnNestedEnumClass = new(
-		id: EC3002,
+	internal static readonly DiagnosticDescriptor EC9002_JsonDiscriminatorOnNestedEnumClass = new(
+		id: EC9002,
 		title: "Useless [JsonDiscriminator] attribute",
 		messageFormat: "The [JsonDiscriminator] attribute does not have any effect when placed on the base type of a nested enum class. If you want to customize the discriminator, annotate the individual sub-cases instead.",
 		category: Category.Miscellaneous,
 		defaultSeverity: DiagnosticSeverity.Warning,
 		isEnabledByDefault: true,
-		helpLinkUri: $"https://badeend.github.io/EnumClass/diagnostics/{EC3002}.html");
+		helpLinkUri: $"https://badeend.github.io/EnumClass/diagnostics/{EC9002}.html");
 }

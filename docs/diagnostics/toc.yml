@@ -30,8 +30,8 @@ items:
   href: EC2003.md
 - name: Warning EC2004
   href: EC2004.md
-- name: Warning EC3001
-  href: EC3001.md
-- name: Warning EC3002
-  href: EC3002.md
+- name: Warning EC9001
+  href: EC9001.md
+- name: Warning EC9002
+  href: EC9002.md
 memberLayout: SamePage
