@@ -163,7 +163,7 @@ public record Job
 }
 ```
 
-At first glance, this looks like regular run-of-the-mill C# code. However, a few questions pop up:
+At first glance, this looks like perfectly fine, run-of-the-mill C# code. However, a few questions pop up:
 - What is the value of `Output` when the job hasn't `Finished` yet? Is it null? Is it an empty array? Will it throw?
 - Similarly for the `ErrorMessage` property: what will its value be when the job didn't fail?
 - What is the `Progress` of a `Failed` job? `0`? `100`? The last progress before it failed? It throws? Who knows...
@@ -190,12 +190,12 @@ public record Job
 }
 ```
 
-In this new design, all properties that were dependent on the `State` have been pushed into the `JobState` type. This resolves all of questions we had before:
+In this new design, all properties that were dependent on the `State` have been pushed into the `JobState` type. This answers all of our earlier questions:
 - only finished jobs have an `Output`,
 - only failed jobs have an `ErrorMessage`,
-- only in-progress jobs have a `Progress`.
+- only in-progress jobs report their `Progress`.
 
-Preconditions that previously only lived inside comments or the heads of developers are now codified in the type system. And if you didn't notice already: **we've eliminated the need for any nullables or exceptions**. I.e. if a job has `Finished` it definitely has an `Output`, if a job has `Failed` it definitely has an `ErrorMessage`, etc.
+Preconditions that previously only lived within comments or inside the heads of developers are now codified in the type system. And if you didn't notice already: **we've eliminated the need for any nullability or exceptions**. I.e. if a job has `Finished` it definitely has an `Output`, if a job has `Failed` it definitely has an `ErrorMessage`, etc.
 
 ## Comparison with interfaces
 
@@ -285,3 +285,25 @@ Both enum classes and interfaces can be used to represent _"one of multiple thin
         </tr>
     </tbody>
 </table>
+
+## In other languages
+
+Depending on which corner of the internet you come from, you might also know "enum classes" by different names:
+- _"Sum types"_
+- _"Tagged unions"_
+- _"Discriminated unions"_
+- _"Closed type hierarchies"_
+- _"Sealed classes"_ <sub>(completely unrelated to C#'s concept of 'sealed' classes...)</sub>
+- _"Algebraic Data Types"_
+- _"Variants"_
+- Or even simply: _"enums"_
+
+Languages with built-in support:
+
+- [Rust](https://doc.rust-lang.org/rust-by-example/custom_types/enum.html)
+- [Swift](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/enumerations/#Associated-Values)
+- [Kotlin](https://kotlinlang.org/docs/sealed-classes.html)
+- [Java](https://www.baeldung.com/java-sealed-classes-interfaces)
+- [Scala](https://docs.scala-lang.org/scala3/reference/enums/adts.html)
+- [TypeScript](https://www.typescriptlang.org/docs/handbook/unions-and-intersections.html#discriminating-unions)
+- _(many functional languages...)_
